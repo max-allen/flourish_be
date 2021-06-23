@@ -1,1 +1,1 @@
-# Simple Node API for adding podcast feeds
+# Simple Node API for podcast feeds
