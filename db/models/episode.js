@@ -6,7 +6,10 @@ const Episode = db.define('episode', {
   title: {
     type: Sequelize.STRING,
     allowNull: false,
-    unique: true,
+    unique: true
+  },
+  description: {
+    type: Sequelize.STRING
   },
   imageUrl: {
     type: Sequelize.STRING
@@ -16,4 +19,4 @@ const Episode = db.define('episode', {
   }
 })
 
-module.exports = Episode 
+module.exports = Episode

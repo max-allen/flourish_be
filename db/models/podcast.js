@@ -5,7 +5,7 @@ const Podcast = db.define('podcast', {
   title: {
     type: Sequelize.STRING,
     allowNull: false,
-    unique: true,
+    unique: true
   },
   description: {
     type: Sequelize.STRING
@@ -18,4 +18,4 @@ const Podcast = db.define('podcast', {
   }
 })
 
-module.exports = Podcast 
+module.exports = Podcast
