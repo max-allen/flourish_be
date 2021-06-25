@@ -2,12 +2,48 @@ const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
 
-const router = express.Router()
+const podcastRouter = express.Router()
+const authRouter = express.Router()
+
 const axios = require('axios')
 const db = require('./db')
-const { Podcast, Episode, UserPodcast } = require('./db/models')
+const { Podcast, Episode, UserPodcast, User } = require('./db/models')
 
-router.post('/', async (req, res, next) => {
+authRouter.post('/', async (req, res, next) => {
+  const { email, password } = req.body
+
+  if (!email || !password) {
+    const err = {
+      status: 422,
+      message: 'Email and password must be provided.'
+    }
+    throw err
+  }
+
+  try {
+    let user = await User.findOne({ where: { email } })
+
+    if (!user) {
+      user = await User.create({ email, password })
+    }
+
+    const isPasswordCorrect = user.correctPassword(password)
+
+    if (!isPasswordCorrect) {
+      const err = {
+        status: 422,
+        message: 'The email/password combination is incorrect. Try again.'
+      }
+      throw err
+    }
+
+    return res.json({ user })
+  } catch (err) {
+    next(err)
+  }
+})
+
+podcastRouter.post('/', async (req, res, next) => {
   const { url, userId } = req.body
   try {
     const resp = await axios({ method: 'get', url })
@@ -66,7 +102,8 @@ const app = express()
 app.use(morgan('dev'))
 app.use(express.json())
 app.use(cors())
-app.use('/api/podcasts', router)
+app.use('/auth', authRouter)
+app.use('/api/podcasts', podcastRouter)
 
 db.sync()
 
