@@ -9,13 +9,13 @@ const Episode = db.define('episode', {
     unique: true
   },
   description: {
-    type: Sequelize.STRING
+    type: Sequelize.STRING(1024)
   },
   imageUrl: {
-    type: Sequelize.STRING
+    type: Sequelize.STRING(1024)
   },
   audioUrl: {
-    type: Sequelize.STRING
+    type: Sequelize.STRING(1024)
   }
 })
 

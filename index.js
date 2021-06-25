@@ -2,12 +2,39 @@ const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
 
+const playlistRouter = express.Router()
 const podcastRouter = express.Router()
 const authRouter = express.Router()
 
 const axios = require('axios')
 const db = require('./db')
-const { Podcast, Episode, UserPodcast, User } = require('./db/models')
+const {
+  Playlist,
+  PlaylistItem,
+  Podcast,
+  Episode,
+  UserPodcast,
+  User
+} = require('./db/models')
+
+playlistRouter.post('/', async (req, res, next) => {
+  const { userId, episodeId } = req.body
+
+  try {
+    const playlist = await Playlist.create({ userId })
+    const playlistItem = await PlaylistItem.create({ position: 1, userId, episodeId, playlistId: playlist.id })
+    const episode = await Episode.findOne({ where: { id: episodeId } })
+
+    const rawPlaylistObj = playlist.get({ plain: true })
+    const rawItemObj = playlistItem.get({ plain: true })
+    rawItemObj.episode = episode
+
+    rawPlaylistObj.sequence = [rawItemObj]
+    res.json({ playlist: rawPlaylistObj })
+  } catch (err) {
+    next(err)
+  }
+})
 
 authRouter.post('/', async (req, res, next) => {
   const { email, password } = req.body
@@ -104,6 +131,7 @@ app.use(express.json())
 app.use(cors())
 app.use('/auth', authRouter)
 app.use('/api/podcasts', podcastRouter)
+app.use('/api/playlists', playlistRouter)
 
 db.sync()
 

@@ -8,7 +8,7 @@ const Podcast = db.define('podcast', {
     unique: true
   },
   description: {
-    type: Sequelize.STRING
+    type: Sequelize.STRING(1024)
   },
   feedUrl: {
     type: Sequelize.STRING
